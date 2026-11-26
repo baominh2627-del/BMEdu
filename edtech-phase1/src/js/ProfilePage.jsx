@@ -65,7 +65,7 @@ function Logo({ className = '' }) {
 
 function Mascot({ className = '' }) {
   const [ok, setOk] = useState(true);
-  return ok ? <img src="/mts-mascot.png" alt="" className={className} onError={() => setOk(false)} /> : null;
+  return ok ? <img src="/bm-mascot.png" alt="" className={className} onError={() => setOk(false)} /> : null;
 }
 
 const Card = ({ title, action, children, className = '' }) => (

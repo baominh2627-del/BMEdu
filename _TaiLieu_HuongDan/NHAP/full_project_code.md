@@ -1,4 +1,4 @@
-﻿### index.html
+### index.html
 ``html
 <!doctype html>
 <html lang="vi">
@@ -711,7 +711,7 @@ body {
 ``javascript
 import { examData } from "./data.js";
 import { db, ref, push, set, update, serverTimestamp } from "./firebase-config.js";
-import { getMTSeduSession, showLoginRequired, insertBackButton } from "./mtsedu-auth.js";
+import { getBMEduSession, showLoginRequired, insertBackButton } from "./bmedu-auth.js";
 
 const loginScreen = document.getElementById("login-screen");
 const examScreen = document.getElementById("exam-screen");
@@ -737,7 +737,7 @@ let studentName = "";
 let studentClass = "";
 
 window.addEventListener("DOMContentLoaded", () => {
-  const session = getMTSeduSession();
+  const session = getBMEduSession();
   const btnStart = document.getElementById("btn-start-exam");
   if (btnStart) {
     btnStart.addEventListener("click", () => {
@@ -1011,9 +1011,9 @@ function submitExam() {
 
 async function saveExamResultToFirebase(tongDiem, soLanThoat) {
   const statusEl = document.getElementById("firebase-status");
-  if (statusEl) statusEl.innerText = "â³ Äang Ä‘á»“ng bá»™ káº¿t quáº£ lÃªn MTSedu...";
+  if (statusEl) statusEl.innerText = "â³ Äang Ä‘á»“ng bá»™ káº¿t quáº£ lÃªn BMEdu...";
   try {
-    const session = getMTSeduSession();
+    const session = getBMEduSession();
     const userId = session ? session.id : null;
     const resultData = {
       hoTen: studentName, lop: studentClass, maDe: MA_DE,
@@ -1122,23 +1122,23 @@ export { db, ref, push, set, update, serverTimestamp };
 
 ``
 
-### mtsedu-auth.js
+### bmedu-auth.js
 ``javascript
-const SESSION_KEY = 'mtsedu_session';
+const SESSION_KEY = 'bmedu_session';
 
-export function getMTSeduSession() {
+export function getBMEduSession() {
   const params = new URLSearchParams(window.location.search);
-  const urlUsername = params.get('mtsedu_user');
-  const urlName = params.get('mtsedu_name');
-  const urlId = params.get('mtsedu_id');
-  const returnUrl = params.get('mtsedu_return');
+  const urlUsername = params.get('bmedu_user');
+  const urlName = params.get('bmedu_name');
+  const urlId = params.get('bmedu_id');
+  const returnUrl = params.get('bmedu_return');
 
   if (urlUsername) {
     const session = {
       username: urlUsername,
       displayName: urlName || urlUsername,
       id: urlId || ('user_' + urlUsername),
-      returnUrl: returnUrl || 'https://mtsedu.vercel.app'
+      returnUrl: returnUrl || 'https://bmedu.vercel.app'
     };
     try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch {}
     return session;
@@ -1153,14 +1153,14 @@ export function getMTSeduSession() {
 }
 
 export function getReturnUrl() {
-  const session = getMTSeduSession();
-  return (session && session.returnUrl) ? session.returnUrl : 'https://mtsedu.vercel.app';
+  const session = getBMEduSession();
+  return (session && session.returnUrl) ? session.returnUrl : 'https://bmedu.vercel.app';
 }
 
-export function isLoggedIn() { return getMTSeduSession() !== null; }
+export function isLoggedIn() { return getBMEduSession() !== null; }
 
 export function getStudentName() {
-  const s = getMTSeduSession();
+  const s = getBMEduSession();
   return s ? (s.displayName || s.username) : '';
 }
 
@@ -1169,7 +1169,7 @@ export function clearSession() {
 }
 
 export function showLoginRequired(container, returnHash = '') {
-  const mtseduUrl = 'https://mtsedu.vercel.app/' + returnHash;
+  const bmeduUrl = 'https://bmedu.vercel.app/' + returnHash;
   container.innerHTML = `
     <div style="max-width:480px;margin:0 auto;padding:36px;background:white;border-radius:16px;
       box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center;
@@ -1177,11 +1177,11 @@ export function showLoginRequired(container, returnHash = '') {
       <div style="font-size:48px;margin-bottom:16px;">ðŸ”’</div>
       <h2 style="font-size:22px;font-weight:700;margin:0 0 8px;color:#111;">Vui lÃ²ng Ä‘Äƒng nháº­p</h2>
       <p style="color:#666;font-size:15px;margin:0 0 28px;line-height:1.6;">
-        Báº¡n cáº§n Ä‘Äƒng nháº­p vÃ o há»‡ thá»‘ng <strong>MTS Education</strong> Ä‘á»ƒ lÃ m bÃ i thi nÃ y.
+        Báº¡n cáº§n Ä‘Äƒng nháº­p vÃ o há»‡ thá»‘ng <strong>BM Education</strong> Ä‘á»ƒ lÃ m bÃ i thi nÃ y.
       </p>
-      <a href="${mtseduUrl}" style="display:inline-block;background:#000;color:#fff;
+      <a href="${bmeduUrl}" style="display:inline-block;background:#000;color:#fff;
         text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:600;">
-        ÄÄƒng nháº­p táº¡i MTS Education â†’
+        ÄÄƒng nháº­p táº¡i BM Education â†’
       </a>
       <p style="margin-top:20px;font-size:13px;color:#999;">TÃ i khoáº£n Ä‘Æ°á»£c cung cáº¥p bá»Ÿi giÃ¡o viÃªn</p>
     </div>
@@ -1189,10 +1189,10 @@ export function showLoginRequired(container, returnHash = '') {
 }
 
 export function insertBackButton() {
-  const session = getMTSeduSession();
-  const returnUrl = (session && session.returnUrl) ? session.returnUrl : 'https://mtsedu.vercel.app';
+  const session = getBMEduSession();
+  const returnUrl = (session && session.returnUrl) ? session.returnUrl : 'https://bmedu.vercel.app';
   const btn = document.createElement('div');
-  btn.id = 'mtsedu-back-btn';
+  btn.id = 'bmedu-back-btn';
   btn.innerHTML = `
     <a href="${returnUrl}" style="display:inline-flex;align-items:center;gap:8px;
       position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,0.85);

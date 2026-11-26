@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 import { onValue, ref, remove, set } from 'firebase/database';
 import { database } from './firebase.js';
 
-const KEY = (uid) => `mtsedu_avatar_${uid}`;
-const MIGRATED_KEY = (uid) => `mtsedu_avatar_synced_${uid}`;
-const AVATAR_EVENT = 'mts_avatar_changed';
+const KEY = (uid) => `bmedu_avatar_${uid}`;
+const MIGRATED_KEY = (uid) => `bmedu_avatar_synced_${uid}`;
+const AVATAR_EVENT = 'bm_avatar_changed';
 const MAX_FILE_MB = 8;
 const OUT_SIZE = 256;
 

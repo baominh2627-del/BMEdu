@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { startVideoTracking, getUid } from './activityService.js';
 import {
   REACTION_TYPES,
+  getDriveThumbnail,
   getReactionInfo,
+  getYoutubeThumbnail,
   handleYoutubeThumbFallback,
   subscribeVideoReactions,
   toggleVideoReaction,
@@ -19,13 +21,109 @@ function formatMMSS(sec) {
   return `${m}:${rem}`;
 }
 
-function LecturePlayerFrame({ part, lesson, trackerRef, onPlayStateChange }) {
+function resolvePosterCandidates(part, lesson, course) {
+  const raw = [
+    part?.cover,
+    lesson?.cover,
+    course?.cover,
+    getYoutubeThumbnail(part?.youtubeId),
+    getDriveThumbnail(part?.driveId),
+  ].filter(Boolean);
+  return [...new Set(raw)];
+}
+
+function isIframeVideoPart(part) {
+  return Boolean(
+    (part?.source === 'youtube' && part?.youtubeId)
+    || (part?.source === 'drive' && part?.driveId),
+  );
+}
+
+function VideoPosterOverlay({ lesson, part, candidates, onPlay }) {
+  const [candidateIdx, setCandidateIdx] = useState(0);
+  const candidatesKey = candidates.join('|');
+
+  useEffect(() => {
+    setCandidateIdx(0);
+  }, [candidatesKey]);
+
+  const currentSrc = candidates[candidateIdx] || '';
+  const sourceLabel = SOURCE_LABEL[part?.source] || part?.source || 'Bài giảng';
+  const duration = part?.duration || lesson?.duration;
+
+  const advanceCandidate = () => {
+    setCandidateIdx((idx) => (idx < candidates.length ? idx + 1 : idx));
+  };
+
+  const handleCoverFallback = (imgEl) => {
+    const before = imgEl.src;
+    handleYoutubeThumbFallback(imgEl);
+    if (imgEl.src === before) advanceCandidate();
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={onPlay}
+      aria-label={`Phát bài giảng ${lesson.title}`}
+      className="group relative w-full h-full overflow-hidden bg-black text-left cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white"
+    >
+      {currentSrc ? (
+        <img
+          src={currentSrc}
+          alt={lesson.title}
+          onError={(e) => handleCoverFallback(e.currentTarget)}
+          onLoad={(e) => e.currentTarget.naturalWidth <= 120 && handleCoverFallback(e.currentTarget)}
+          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+        />
+      ) : (
+        <div className="w-full h-full bg-gradient-to-br from-neutral-900 to-black flex items-center justify-center p-6 text-center">
+          <p className="text-white/90 text-base sm:text-lg font-bold max-w-xl">{lesson.title}</p>
+        </div>
+      )}
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/75 via-black/25 to-transparent" />
+
+      <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+        <span className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-black/65 group-hover:bg-black/85 text-white backdrop-blur-sm ring-2 ring-white/90 shadow-2xl flex items-center justify-center transition-transform duration-200 group-hover:scale-110">
+          <svg className="w-7 h-7 sm:w-8 sm:h-8 translate-x-0.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </span>
+      </div>
+
+      <div className="pointer-events-none absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-xs font-semibold border border-white/15">
+          <span>▶ Nhấn để xem</span>
+          <span className="text-white/70">· {sourceLabel}</span>
+        </span>
+        {duration && (
+          <span className="px-2.5 py-1 rounded-full bg-black/70 backdrop-blur-sm text-white text-xs font-semibold border border-white/15">
+            {duration}
+          </span>
+        )}
+      </div>
+    </button>
+  );
+}
+
+function LecturePlayerFrame({ part, lesson, posterCandidates, isStarted, onStartPlayback, trackerRef, onPlayStateChange }) {
+  if (isIframeVideoPart(part) && !isStarted && posterCandidates.length > 0) {
+    return (
+      <VideoPosterOverlay
+        lesson={lesson}
+        part={part}
+        candidates={posterCandidates}
+        onPlay={onStartPlayback}
+      />
+    );
+  }
   if (part.source === 'youtube' && part.youtubeId) {
     return (
       <iframe
         key={`yt-${part.youtubeId}`}
         className="w-full h-full"
-        src={`https://www.youtube.com/embed/${part.youtubeId}?rel=0`}
+        src={`https://www.youtube.com/embed/${part.youtubeId}?rel=0&autoplay=1`}
         title={lesson.title}
         referrerPolicy="strict-origin-when-cross-origin"
         allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
@@ -51,7 +149,7 @@ function LecturePlayerFrame({ part, lesson, trackerRef, onPlayStateChange }) {
         key={`loc-${part.file}`}
         className="w-full h-full bg-black"
         src={part.file}
-        poster={lesson.cover}
+        poster={posterCandidates[0] || ''}
         controls
         controlsList="nodownload"
         onPlay={() => { trackerRef.current?.setPlaying(true); onPlayStateChange(true); }}
@@ -105,6 +203,7 @@ export default function CoursePlayerView({
   const [showTimeline, setShowTimeline] = useState(false);
   const [sessionSec, setSessionSec] = useState(0);
   const [isTrackingActive, setIsTrackingActive] = useState(false);
+  const [isPlayerStarted, setIsPlayerStarted] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [videoReactions, setVideoReactions] = useState({});
   const [reactionError, setReactionError] = useState('');
@@ -115,18 +214,22 @@ export default function CoursePlayerView({
   const activeChapter = activeEntry?.chapter;
   const activeLesson = activeEntry?.lesson;
   const activePart = activeLesson?.parts?.[activePartIdx] || activeLesson?.parts?.[0] || {};
+  const posterCandidates = useMemo(
+    () => resolvePosterCandidates(activePart, activeLesson, course),
+    [activePart, activeLesson, course],
+  );
 
   // Load saved local note per (user, lesson)
   useEffect(() => {
     if (!activeLesson) return;
-    const key = `mts_video_note_${uid || 'guest'}_${activeLesson.id}`;
+    const key = `bm_video_note_${uid || 'guest'}_${activeLesson.id}`;
     setNoteText(localStorage.getItem(key) || '');
   }, [activeLesson?.id, uid]);
 
   const saveNote = (val) => {
     setNoteText(val);
     if (!activeLesson) return;
-    const key = `mts_video_note_${uid || 'guest'}_${activeLesson.id}`;
+    const key = `bm_video_note_${uid || 'guest'}_${activeLesson.id}`;
     localStorage.setItem(key, val);
   };
 
@@ -137,19 +240,32 @@ export default function CoursePlayerView({
     return subscribeVideoReactions(activeLesson.id, setVideoReactions);
   }, [activeLesson?.id]);
 
+  useEffect(() => {
+    setIsPlayerStarted(false);
+  }, [activeLesson?.id, activePartIdx]);
+
   // Track video watch time into Firebase
   useEffect(() => {
     if (!activeLesson || !user) return undefined;
-    const autoPlayCount = activePart.source !== 'local';
-    setIsTrackingActive(autoPlayCount);
+    const isIframe = isIframeVideoPart(activePart);
+    const startImmediately = isIframe && posterCandidates.length === 0;
+    setIsTrackingActive(startImmediately);
     setSessionSec(0);
-    const tracker = startVideoTracking(user, activeLesson, autoPlayCount);
+    const tracker = startVideoTracking(user, activeLesson, startImmediately);
     trackerRef.current = tracker;
     return () => {
       tracker.stop();
       trackerRef.current = null;
     };
   }, [activeLesson?.id, activePartIdx, uid]); // eslint-disable-line
+
+  const handleStartPlayback = () => {
+    setIsPlayerStarted(true);
+    if (isIframeVideoPart(activePart)) {
+      trackerRef.current?.setPlaying(true);
+      setIsTrackingActive(true);
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -184,6 +300,7 @@ export default function CoursePlayerView({
   }
 
   const selectLesson = (lessonId, chapterId) => {
+    setIsPlayerStarted(false);
     setActiveLessonId(lessonId);
     setActivePartIdx(0);
     setShowTimeline(false);
@@ -205,10 +322,16 @@ export default function CoursePlayerView({
     if (!isLoggedIn) { onRequireLogin(); return; }
     try {
       const url = new URL(quiz.url, window.location.origin);
+      const returnUrl = `${window.location.origin}${window.location.pathname}#videos`;
+      const uidParam = user.id || (`user_${user.username}`);
+      url.searchParams.set('bmedu_user', user.username || '');
+      url.searchParams.set('bmedu_name', user.displayName || user.username || '');
+      url.searchParams.set('bmedu_id', uidParam);
+      url.searchParams.set('bmedu_return', returnUrl);
       url.searchParams.set('mtsedu_user', user.username || '');
       url.searchParams.set('mtsedu_name', user.displayName || user.username || '');
-      url.searchParams.set('mtsedu_id', user.id || (`user_${user.username}`));
-      url.searchParams.set('mtsedu_return', `${window.location.origin}${window.location.pathname}#videos`);
+      url.searchParams.set('mtsedu_id', uidParam);
+      url.searchParams.set('mtsedu_return', returnUrl);
       openExam(url.toString(), quiz.title || 'Bài kiểm tra');
     } catch {
       window.open(quiz.url, '_blank', 'noreferrer');
@@ -287,6 +410,9 @@ export default function CoursePlayerView({
               <LecturePlayerFrame
                 part={activePart}
                 lesson={activeLesson}
+                posterCandidates={posterCandidates}
+                isStarted={isPlayerStarted}
+                onStartPlayback={handleStartPlayback}
                 trackerRef={trackerRef}
                 onPlayStateChange={setIsTrackingActive}
               />
@@ -300,7 +426,7 @@ export default function CoursePlayerView({
                     <button
                       key={idx}
                       type="button"
-                      onClick={() => setActivePartIdx(idx)}
+                      onClick={() => { setIsPlayerStarted(false); setActivePartIdx(idx); }}
                       className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${
                         idx === activePartIdx
                           ? 'bg-black text-white border-black'

@@ -367,13 +367,13 @@ export default function AdminVideos({ preselectedCourse = null, onOpenCourses })
             <label className="col-span-2 block text-sm font-medium text-slate-600">
               Chương / Phần
               <input
-                list="mts-chapter-suggestions"
+                list="bm-chapter-suggestions"
                 className={inputCls}
                 value={form.chapter}
                 onChange={(e) => set('chapter', e.target.value)}
                 placeholder="vd: Chương 2: Hệ BPT"
               />
-              <datalist id="mts-chapter-suggestions">
+              <datalist id="bm-chapter-suggestions">
                 {existingChapters.map((ch) => <option key={ch} value={ch} />)}
               </datalist>
               {existingChapters.length > 0 && (

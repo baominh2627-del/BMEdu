@@ -24,15 +24,15 @@ body {
   min-height: 100vh;
 }
 
-/* ===== MTS Custom Background: Soft Blue Cloud ===== */
-.mts-bg {
+/* ===== BM Custom Background: Soft Blue Cloud ===== */
+.bm-bg {
   position: relative;
   background-color: #f5f7fa;
   overflow-x: hidden;
 }
 
 /* Vệt mây xanh nhạt – blob chính ở giữa lệch trái */
-.mts-bg::before {
+.bm-bg::before {
   content: "";
   position: fixed;
   top: 0;
@@ -53,7 +53,7 @@ body {
    vẫn thắng. Trước đây rule này ép navbar và menu thành position: relative,
    nên chúng bị đẩy lệch và đè lên nội dung. */
 @layer base {
-  .mts-bg > * {
+  .bm-bg > * {
     position: relative;
     z-index: 1;
   }

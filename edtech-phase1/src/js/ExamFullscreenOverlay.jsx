@@ -73,13 +73,13 @@ export function ExamOverlayProvider({ children }) {
       if (!event?.data || typeof event.data !== 'object') return;
       if (activeExam.origin && event.origin && event.origin !== activeExam.origin) return;
 
-      if (event.data.type === 'MTSEDU_EXAM_SUBMITTED') {
+      if (event.data.type === 'BMEDU_EXAM_SUBMITTED' || event.data.type === 'MTSEDU_EXAM_SUBMITTED') {
         // Chỉ thoát cơ chế toàn màn hình sau khi học sinh đã nộp bài xong
         setActiveExam((prev) => (prev ? { ...prev, submitted: true } : prev));
         exitOsFullscreen();
-      } else if (event.data.type === 'MTSEDU_EXAM_CLOSE') {
+      } else if (event.data.type === 'BMEDU_EXAM_CLOSE' || event.data.type === 'MTSEDU_EXAM_CLOSE') {
         closeExam();
-      } else if (event.data.type === 'MTSEDU_EXAM_REQUEST_FULLSCREEN') {
+      } else if (event.data.type === 'BMEDU_EXAM_REQUEST_FULLSCREEN' || event.data.type === 'MTSEDU_EXAM_REQUEST_FULLSCREEN') {
         if (!activeExam.submitted) enterOsFullscreen();
       }
     };

@@ -24,3 +24,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Local OAuth secrets & temporary downloaded videos
+.secrets/
+client_secrets*.json
+*youtube_token*.json
+tmp_videos/

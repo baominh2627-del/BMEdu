@@ -28,8 +28,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # Để GitHub Pages load đúng assets với base path /MTSedu/
-          VITE_BASE: /MTSedu/
+          # Để GitHub Pages load đúng assets với base path /BMEdu/
+          VITE_BASE: /BMEdu/
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4

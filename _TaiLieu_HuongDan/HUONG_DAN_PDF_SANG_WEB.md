@@ -12,7 +12,7 @@ Tài liệu này hướng dẫn quy trình 5 bước để chuyển đổi một
 - Mở file `prompt_tao_bai_thi.md`.
 - Điền các thông tin cơ bản: *Tên đề, Mã đề, Thời gian...*
 - Dán nội dung câu hỏi (hoặc yêu cầu AI tự động điền vào dựa trên PDF).
-- AI sẽ trả về cho bạn đầy đủ code của 5 file: `index.html`, `data.js`, `script.js`, `firebase-config.js`, `mtsedu-auth.js`.
+- AI sẽ trả về cho bạn đầy đủ code của 5 file: `index.html`, `data.js`, `script.js`, `firebase-config.js`, `bmedu-auth.js`.
 
 ### Bước 3: Tạo thư mục và Code
 - Tạo một thư mục mới trên máy tính (VD: `bai-kiem-tra-moi`).

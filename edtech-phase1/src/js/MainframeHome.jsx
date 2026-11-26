@@ -61,7 +61,7 @@ export default function MainframeHome({ onNavigateToLogin, onNavigate }) {
   };
 
   return (
-    <div className="relative w-full min-h-screen text-black mts-bg overflow-hidden">
+    <div className="relative w-full min-h-screen text-black bm-bg overflow-hidden">
 
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 w-full flex flex-row justify-between items-center bg-white/80 backdrop-blur-md border-b border-black/8 px-4 lg:px-5 xl:px-8 py-3 sm:py-4">

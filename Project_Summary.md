@@ -7,7 +7,7 @@ BM Education là một nền tảng giáo dục trực tuyến (EdTech) được
 Dự án được tổ chức theo cấu trúc tiêu chuẩn của một ứng dụng Vite + React:
 
 ```text
-MTSedu/
+BMEdu/
 ├── edtech-phase1/
 │   └── src/
 │       ├── css/           # Các file CSS toàn cục và CSS riêng cho component
@@ -41,7 +41,7 @@ MTSedu/
 
 ### 3.4. Dữ liệu & Styling
 - `data/subjectsData.js`: Chứa dữ liệu cứng (metadata, danh sách bài kiểm tra) cho từng môn học để render linh hoạt vào `SubjectPage.jsx`.
-- `css/App.css` & `css/LoginPage.css`: Chứa các custom CSS (như hình nền `mts-bg` với radial-gradient, các class không hỗ trợ sẵn bởi Tailwind).
+- `css/App.css` & `css/LoginPage.css`: Chứa các custom CSS (như hình nền `bm-bg` với radial-gradient, các class không hỗ trợ sẵn bởi Tailwind).
 
 ### 3.5. Cấu hình dự án (Root files)
 - `package.json` / `package-lock.json`: Quản lý các thư viện dependencies (React, Vite, Firebase, Tailwind...).

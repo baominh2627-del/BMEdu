@@ -145,7 +145,7 @@ Hãy kết thúc bằng dòng thông báo sau:
 1. Mở **Claude**.
 2. **Paste toàn bộ nội dung file `data.js`** vào (hoặc upload file lên).
 3. **Copy toàn bộ prompt bên dưới**, điền thông tin vào các ô `[...]`, rồi gửi.
-4. Claude sẽ tạo đầy đủ 4 file còn lại: `index.html`, `firebase-config.js`, `mtsedu-auth.js`, `script.js`.
+4. Claude sẽ tạo đầy đủ 4 file còn lại: `index.html`, `firebase-config.js`, `bmedu-auth.js`, `script.js`.
 
 ---
 
@@ -337,25 +337,25 @@ export { db, ref, push, set, update, serverTimestamp };
 
 ---
 
-## FILE 3: mtsedu-auth.js
+## FILE 3: bmedu-auth.js
 Copy y chang, KHÔNG thay đổi gì:
 
 ```js
-const SESSION_KEY = 'mtsedu_session';
+const SESSION_KEY = 'bmedu_session';
 
-export function getMTSeduSession() {
+export function getBMEduSession() {
   const params = new URLSearchParams(window.location.search);
-  const urlUsername = params.get('mtsedu_user');
-  const urlName = params.get('mtsedu_name');
-  const urlId = params.get('mtsedu_id');
-  const returnUrl = params.get('mtsedu_return');
+  const urlUsername = params.get('bmedu_user');
+  const urlName = params.get('bmedu_name');
+  const urlId = params.get('bmedu_id');
+  const returnUrl = params.get('bmedu_return');
 
   if (urlUsername) {
     const session = {
       username: urlUsername,
       displayName: urlName || urlUsername,
       id: urlId || ('user_' + urlUsername),
-      returnUrl: returnUrl || 'https://mtsedu.vercel.app'
+      returnUrl: returnUrl || 'https://bmedu.vercel.app'
     };
     try { localStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch {}
     return session;
@@ -370,14 +370,14 @@ export function getMTSeduSession() {
 }
 
 export function getReturnUrl() {
-  const session = getMTSeduSession();
-  return (session && session.returnUrl) ? session.returnUrl : 'https://mtsedu.vercel.app';
+  const session = getBMEduSession();
+  return (session && session.returnUrl) ? session.returnUrl : 'https://bmedu.vercel.app';
 }
 
-export function isLoggedIn() { return getMTSeduSession() !== null; }
+export function isLoggedIn() { return getBMEduSession() !== null; }
 
 export function getStudentName() {
-  const s = getMTSeduSession();
+  const s = getBMEduSession();
   return s ? (s.displayName || s.username) : '';
 }
 
@@ -386,7 +386,7 @@ export function clearSession() {
 }
 
 export function showLoginRequired(container, returnHash = '') {
-  const mtseduUrl = 'https://mtsedu.vercel.app/' + returnHash;
+  const bmeduUrl = 'https://bmedu.vercel.app/' + returnHash;
   container.innerHTML = `
     <div style="max-width:480px;margin:0 auto;padding:36px;background:white;border-radius:16px;
       box-shadow:0 4px 24px rgba(0,0,0,0.08);text-align:center;
@@ -396,7 +396,7 @@ export function showLoginRequired(container, returnHash = '') {
       <p style="color:#666;font-size:15px;margin:0 0 28px;line-height:1.6;">
         Bạn cần đăng nhập vào hệ thống <strong>BM Education</strong> để làm bài thi này.
       </p>
-      <a href="${mtseduUrl}" style="display:inline-block;background:#000;color:#fff;
+      <a href="${bmeduUrl}" style="display:inline-block;background:#000;color:#fff;
         text-decoration:none;padding:14px 32px;border-radius:10px;font-size:15px;font-weight:600;">
         Đăng nhập tại BM Education →
       </a>
@@ -406,10 +406,10 @@ export function showLoginRequired(container, returnHash = '') {
 }
 
 export function insertBackButton() {
-  const session = getMTSeduSession();
-  const returnUrl = (session && session.returnUrl) ? session.returnUrl : 'https://mtsedu.vercel.app';
+  const session = getBMEduSession();
+  const returnUrl = (session && session.returnUrl) ? session.returnUrl : 'https://bmedu.vercel.app';
   const btn = document.createElement('div');
-  btn.id = 'mtsedu-back-btn';
+  btn.id = 'bmedu-back-btn';
   btn.innerHTML = `
     <a href="${returnUrl}" style="display:inline-flex;align-items:center;gap:8px;
       position:fixed;top:14px;left:14px;z-index:9999;background:rgba(0,0,0,0.85);
@@ -433,7 +433,7 @@ Dùng ĐÚNG template này, chỉ thay 4 hằng số ở đầu file:
 ```js
 import { examData } from "./data.js";
 import { db, ref, push, set, update, serverTimestamp } from "./firebase-config.js";
-import { getMTSeduSession, showLoginRequired, insertBackButton } from "./mtsedu-auth.js";
+import { getBMEduSession, showLoginRequired, insertBackButton } from "./bmedu-auth.js";
 
 const loginScreen = document.getElementById("login-screen");
 const examScreen = document.getElementById("exam-screen");
@@ -468,7 +468,7 @@ function isFullscreenActive() {
 
 function enterExamFullscreen() {
   if (__isInExamIframe) {
-    try { window.parent.postMessage({ type: "MTSEDU_EXAM_REQUEST_FULLSCREEN" }, "*"); } catch {}
+    try { window.parent.postMessage({ type: "BMEDU_EXAM_REQUEST_FULLSCREEN" }, "*"); } catch {}
     return;
   }
   if (isFullscreenActive()) return;
@@ -479,7 +479,7 @@ function enterExamFullscreen() {
 
 function exitExamFullscreen() {
   if (__isInExamIframe) {
-    try { window.parent.postMessage({ type: "MTSEDU_EXAM_SUBMITTED" }, "*"); } catch {}
+    try { window.parent.postMessage({ type: "BMEDU_EXAM_SUBMITTED" }, "*"); } catch {}
     return;
   }
   if (!isFullscreenActive()) return;
@@ -488,38 +488,38 @@ function exitExamFullscreen() {
 }
 
 function showExamToast(message) {
-  let toast = document.getElementById("mts-exam-toast");
+  let toast = document.getElementById("bm-exam-toast");
   if (!toast) {
     toast = document.createElement("div");
-    toast.id = "mts-exam-toast";
+    toast.id = "bm-exam-toast";
     document.body.appendChild(toast);
   }
   toast.innerText = message;
   toast.classList.remove("hidden");
-  clearTimeout(window.__mtsToastTimer);
-  window.__mtsToastTimer = setTimeout(() => toast.classList.add("hidden"), 5000);
+  clearTimeout(window.__bmToastTimer);
+  window.__bmToastTimer = setTimeout(() => toast.classList.add("hidden"), 5000);
 }
 
 function showExamConfirm(message, onConfirm) {
-  let modal = document.getElementById("mts-confirm-modal");
+  let modal = document.getElementById("bm-confirm-modal");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "mts-confirm-modal";
+    modal.id = "bm-confirm-modal";
     modal.innerHTML = `
-      <div class="mts-modal-backdrop"></div>
-      <div class="mts-modal-box" role="dialog" aria-modal="true">
-        <div class="mts-modal-title">Xác nhận</div>
-        <p class="mts-modal-msg"></p>
-        <div class="mts-modal-actions">
-          <button type="button" class="mts-modal-cancel">Quay lại</button>
-          <button type="button" class="mts-modal-ok">Đồng ý</button>
+      <div class="bm-modal-backdrop"></div>
+      <div class="bm-modal-box" role="dialog" aria-modal="true">
+        <div class="bm-modal-title">Xác nhận</div>
+        <p class="bm-modal-msg"></p>
+        <div class="bm-modal-actions">
+          <button type="button" class="bm-modal-cancel">Quay lại</button>
+          <button type="button" class="bm-modal-ok">Đồng ý</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
   }
-  modal.querySelector(".mts-modal-msg").innerText = message;
-  const btnCancel = modal.querySelector(".mts-modal-cancel");
-  const btnOk = modal.querySelector(".mts-modal-ok");
+  modal.querySelector(".bm-modal-msg").innerText = message;
+  const btnCancel = modal.querySelector(".bm-modal-cancel");
+  const btnOk = modal.querySelector(".bm-modal-ok");
   const close = () => {
     modal.classList.add("hidden");
     btnCancel.onclick = null;
@@ -531,8 +531,8 @@ function showExamConfirm(message, onConfirm) {
 }
 
 function syncFullscreenUI() {
-  const bar = document.getElementById("mts-fs-bar");
-  const btn = document.getElementById("mts-fs-btn");
+  const bar = document.getElementById("bm-fs-bar");
+  const btn = document.getElementById("bm-fs-btn");
   if (!bar || !btn) return;
   if (__isInExamIframe || isFinished || isFullscreenActive()) {
     bar.classList.add("hidden");
@@ -545,12 +545,12 @@ function syncFullscreenUI() {
 }
 
 function ensureFullscreenBar() {
-  if (!document.getElementById("mts-fs-bar")) {
+  if (!document.getElementById("bm-fs-bar")) {
     const bar = document.createElement("div");
-    bar.id = "mts-fs-bar";
+    bar.id = "bm-fs-bar";
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.id = "mts-fs-btn";
+    btn.id = "bm-fs-btn";
     btn.addEventListener("click", () => enterExamFullscreen());
     bar.appendChild(btn);
     document.body.appendChild(bar);
@@ -560,7 +560,7 @@ function ensureFullscreenBar() {
       const keepFullscreen = (e) => {
         if (isFinished || isFullscreenActive()) return;
         if (e.type === "keydown" && e.key === "Escape") return;
-        if (e.target && e.target.closest && e.target.closest("#mtsedu-back-btn, .mts-modal-ok")) return;
+        if (e.target && e.target.closest && e.target.closest("#bmedu-back-btn, .bm-modal-ok")) return;
         enterExamFullscreen();
       };
       document.addEventListener("pointerdown", keepFullscreen, { capture: true });
@@ -568,17 +568,17 @@ function ensureFullscreenBar() {
       enterExamFullscreen();
     } else {
       document.addEventListener("click", (e) => {
-        const backLink = e.target && e.target.closest ? e.target.closest("#mtsedu-back-btn a") : null;
+        const backLink = e.target && e.target.closest ? e.target.closest("#bmedu-back-btn a") : null;
         if (!backLink) return;
         e.preventDefault();
         const inExam = typeof examScreen !== "undefined" && examScreen && !examScreen.classList.contains("hidden") && !isFinished;
         if (inExam) {
           showExamConfirm("Bạn chưa nộp bài. Bạn có chắc muốn thoát về trang chủ?", () => {
             if (typeof saveDraft === "function") saveDraft();
-            window.parent.postMessage({ type: "MTSEDU_EXAM_CLOSE" }, "*");
+            window.parent.postMessage({ type: "BMEDU_EXAM_CLOSE" }, "*");
           });
         } else {
-          window.parent.postMessage({ type: "MTSEDU_EXAM_CLOSE" }, "*");
+          window.parent.postMessage({ type: "BMEDU_EXAM_CLOSE" }, "*");
         }
       });
     }
@@ -588,7 +588,7 @@ function ensureFullscreenBar() {
 
 window.addEventListener("DOMContentLoaded", () => {
   ensureFullscreenBar();
-  const session = getMTSeduSession();
+  const session = getBMEduSession();
 
   // Luôn gắn listener trước — đảm bảo btn-start-exam tồn tại
   const btnStart = document.getElementById("btn-start-exam");
@@ -935,9 +935,9 @@ function submitExam() {
 
 async function saveExamResultToFirebase(diemPhan1, diemPhan2, diemPhan3, tongDiem, soLanThoat, correctness) {
   const statusEl = document.getElementById("firebase-status");
-  if (statusEl) statusEl.innerText = "⏳ Đang đồng bộ kết quả lên MTSedu...";
+  if (statusEl) statusEl.innerText = "⏳ Đang đồng bộ kết quả lên BMEdu...";
   try {
-    const session = getMTSeduSession();
+    const session = getBMEduSession();
     const userId = session ? session.id : null;
     const resultData = {
       hoTen: studentName, lop: studentClass, maDe: MA_DE,

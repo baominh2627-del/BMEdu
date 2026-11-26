@@ -1,4 +1,4 @@
-﻿### index.html
+### index.html
 ``html
 <!doctype html>
 <html lang="vi">
@@ -102,7 +102,7 @@
 ``javascript
 import { examData } from "./data.js";
 import { db, ref, push, set, update, serverTimestamp } from "./firebase-config.js";
-import { getMTSeduSession, showLoginRequired, insertBackButton } from "./mtsedu-auth.js";
+import { getBMEduSession, showLoginRequired, insertBackButton } from "./bmedu-auth.js";
 
 const loginScreen = document.getElementById("login-screen");
 const examScreen = document.getElementById("exam-screen");
@@ -128,7 +128,7 @@ let studentName = "";
 let studentClass = "";
 
 window.addEventListener("DOMContentLoaded", () => {
-  const session = getMTSeduSession();
+  const session = getBMEduSession();
   const btnStart = document.getElementById("btn-start-exam");
   if (btnStart) {
     btnStart.addEventListener("click", () => {
@@ -402,9 +402,9 @@ function submitExam() {
 
 async function saveExamResultToFirebase(tongDiem, soLanThoat) {
   const statusEl = document.getElementById("firebase-status");
-  if (statusEl) statusEl.innerText = "â³ Äang Ä‘á»“ng bá»™ káº¿t quáº£ lÃªn MTSedu...";
+  if (statusEl) statusEl.innerText = "â³ Äang Ä‘á»“ng bá»™ káº¿t quáº£ lÃªn BMEdu...";
   try {
-    const session = getMTSeduSession();
+    const session = getBMEduSession();
     const userId = session ? session.id : null;
     const resultData = {
       hoTen: studentName, lop: studentClass, maDe: MA_DE,

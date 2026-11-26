@@ -1,6 +1,6 @@
 import { examData } from "./data.js";
 import { db, ref, push, set, update, serverTimestamp } from "./firebase-config.js";
-import { getMTSeduSession, showLoginRequired, insertBackButton } from "./mtsedu-auth.js";
+import { getBMEduSession, showLoginRequired, insertBackButton } from "./bmedu-auth.js";
 
 const loginScreen = document.getElementById("login-screen");
 const examScreen = document.getElementById("exam-screen");
@@ -35,7 +35,7 @@ function isFullscreenActive() {
 
 function enterExamFullscreen() {
   if (__isInExamIframe) {
-    try { window.parent.postMessage({ type: "MTSEDU_EXAM_REQUEST_FULLSCREEN" }, "*"); } catch {}
+    try { window.parent.postMessage({ type: "BMEDU_EXAM_REQUEST_FULLSCREEN" }, "*"); } catch {}
     return;
   }
   if (isFullscreenActive()) return;
@@ -46,7 +46,7 @@ function enterExamFullscreen() {
 
 function exitExamFullscreen() {
   if (__isInExamIframe) {
-    try { window.parent.postMessage({ type: "MTSEDU_EXAM_SUBMITTED" }, "*"); } catch {}
+    try { window.parent.postMessage({ type: "BMEDU_EXAM_SUBMITTED" }, "*"); } catch {}
     return;
   }
   if (!isFullscreenActive()) return;
@@ -55,38 +55,38 @@ function exitExamFullscreen() {
 }
 
 function showExamToast(message) {
-  let toast = document.getElementById("mts-exam-toast");
+  let toast = document.getElementById("bm-exam-toast");
   if (!toast) {
     toast = document.createElement("div");
-    toast.id = "mts-exam-toast";
+    toast.id = "bm-exam-toast";
     document.body.appendChild(toast);
   }
   toast.innerText = message;
   toast.classList.remove("hidden");
-  clearTimeout(window.__mtsToastTimer);
-  window.__mtsToastTimer = setTimeout(() => toast.classList.add("hidden"), 5000);
+  clearTimeout(window.__bmToastTimer);
+  window.__bmToastTimer = setTimeout(() => toast.classList.add("hidden"), 5000);
 }
 
 function showExamConfirm(message, onConfirm) {
-  let modal = document.getElementById("mts-confirm-modal");
+  let modal = document.getElementById("bm-confirm-modal");
   if (!modal) {
     modal = document.createElement("div");
-    modal.id = "mts-confirm-modal";
+    modal.id = "bm-confirm-modal";
     modal.innerHTML = `
-      <div class="mts-modal-backdrop"></div>
-      <div class="mts-modal-box" role="dialog" aria-modal="true">
-        <div class="mts-modal-title">Xác nhận</div>
-        <p class="mts-modal-msg"></p>
-        <div class="mts-modal-actions">
-          <button type="button" class="mts-modal-cancel">Quay lại</button>
-          <button type="button" class="mts-modal-ok">Đồng ý</button>
+      <div class="bm-modal-backdrop"></div>
+      <div class="bm-modal-box" role="dialog" aria-modal="true">
+        <div class="bm-modal-title">Xác nhận</div>
+        <p class="bm-modal-msg"></p>
+        <div class="bm-modal-actions">
+          <button type="button" class="bm-modal-cancel">Quay lại</button>
+          <button type="button" class="bm-modal-ok">Đồng ý</button>
         </div>
       </div>`;
     document.body.appendChild(modal);
   }
-  modal.querySelector(".mts-modal-msg").innerText = message;
-  const btnCancel = modal.querySelector(".mts-modal-cancel");
-  const btnOk = modal.querySelector(".mts-modal-ok");
+  modal.querySelector(".bm-modal-msg").innerText = message;
+  const btnCancel = modal.querySelector(".bm-modal-cancel");
+  const btnOk = modal.querySelector(".bm-modal-ok");
   const close = () => {
     modal.classList.add("hidden");
     btnCancel.onclick = null;
@@ -98,8 +98,8 @@ function showExamConfirm(message, onConfirm) {
 }
 
 function syncFullscreenUI() {
-  const bar = document.getElementById("mts-fs-bar");
-  const btn = document.getElementById("mts-fs-btn");
+  const bar = document.getElementById("bm-fs-bar");
+  const btn = document.getElementById("bm-fs-btn");
   if (!bar || !btn) return;
   if (__isInExamIframe || isFinished || isFullscreenActive()) {
     bar.classList.add("hidden");
@@ -112,12 +112,12 @@ function syncFullscreenUI() {
 }
 
 function ensureFullscreenBar() {
-  if (!document.getElementById("mts-fs-bar")) {
+  if (!document.getElementById("bm-fs-bar")) {
     const bar = document.createElement("div");
-    bar.id = "mts-fs-bar";
+    bar.id = "bm-fs-bar";
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.id = "mts-fs-btn";
+    btn.id = "bm-fs-btn";
     btn.addEventListener("click", () => enterExamFullscreen());
     bar.appendChild(btn);
     document.body.appendChild(bar);
@@ -127,7 +127,7 @@ function ensureFullscreenBar() {
       const keepFullscreen = (e) => {
         if (isFinished || isFullscreenActive()) return;
         if (e.type === "keydown" && e.key === "Escape") return;
-        if (e.target && e.target.closest && e.target.closest("#mtsedu-back-btn, .mts-modal-ok")) return;
+        if (e.target && e.target.closest && e.target.closest("#bmedu-back-btn, .bm-modal-ok")) return;
         enterExamFullscreen();
       };
       document.addEventListener("pointerdown", keepFullscreen, { capture: true });
@@ -135,17 +135,17 @@ function ensureFullscreenBar() {
       enterExamFullscreen();
     } else {
       document.addEventListener("click", (e) => {
-        const backLink = e.target && e.target.closest ? e.target.closest("#mtsedu-back-btn a") : null;
+        const backLink = e.target && e.target.closest ? e.target.closest("#bmedu-back-btn a") : null;
         if (!backLink) return;
         e.preventDefault();
         const inExam = typeof examScreen !== "undefined" && examScreen && !examScreen.classList.contains("hidden") && !isFinished;
         if (inExam) {
           showExamConfirm("Bạn chưa nộp bài. Bạn có chắc muốn thoát về trang chủ?", () => {
             if (typeof saveDraft === "function") saveDraft();
-            window.parent.postMessage({ type: "MTSEDU_EXAM_CLOSE" }, "*");
+            window.parent.postMessage({ type: "BMEDU_EXAM_CLOSE" }, "*");
           });
         } else {
-          window.parent.postMessage({ type: "MTSEDU_EXAM_CLOSE" }, "*");
+          window.parent.postMessage({ type: "BMEDU_EXAM_CLOSE" }, "*");
         }
       });
     }
@@ -155,7 +155,7 @@ function ensureFullscreenBar() {
 
 window.addEventListener("DOMContentLoaded", () => {
   ensureFullscreenBar();
-  const session = getMTSeduSession();
+  const session = getBMEduSession();
   const btnStart = document.getElementById("btn-start-exam");
   if (btnStart) {
     btnStart.addEventListener("click", () => {
@@ -432,9 +432,9 @@ function submitExam() {
 
 async function saveExamResultToFirebase(tongDiem, soLanThoat) {
   const statusEl = document.getElementById("firebase-status");
-  if (statusEl) statusEl.innerText = "⏳ Đang đồng bộ kết quả lên MTSedu...";
+  if (statusEl) statusEl.innerText = "⏳ Đang đồng bộ kết quả lên BMEdu...";
   try {
-    const session = getMTSeduSession();
+    const session = getBMEduSession();
     const userId = session ? session.id : null;
     const resultData = {
       hoTen: studentName, lop: studentClass, maDe: MA_DE,

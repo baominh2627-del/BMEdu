@@ -899,7 +899,7 @@ body > .container {
 }
 
 /* THANH ĐIỀU KHIỂN TOÀN MÀN HÌNH & CẢNH BÁO KHÔNG CHẶN */
-#mts-fs-bar {
+#bm-fs-bar {
   position: fixed;
   top: 10px;
   right: 16px;
@@ -909,7 +909,7 @@ body > .container {
   gap: 8px;
 }
 
-#mts-fs-btn {
+#bm-fs-btn {
   border: none;
   border-radius: 999px;
   padding: 8px 14px;
@@ -922,17 +922,17 @@ body > .container {
   transition: transform 0.15s ease, background-color 0.15s ease;
 }
 
-#mts-fs-btn:hover {
+#bm-fs-btn:hover {
   transform: translateY(-1px);
   background: #0f172a;
 }
 
-#mts-fs-btn.needs-fs {
+#bm-fs-btn.needs-fs {
   background: #1e3a8a;
   box-shadow: 0 4px 14px rgba(30, 58, 138, 0.35);
 }
 
-#mts-exam-toast {
+#bm-exam-toast {
   position: fixed;
   top: 14px;
   left: 50%;
@@ -948,7 +948,7 @@ body > .container {
 }
 
 /* HỘP THOẠI XÁC NHẬN TRONG TRANG (KHÔNG LÀM THOÁT FULLSCREEN) */
-#mts-confirm-modal {
+#bm-confirm-modal {
   position: fixed;
   inset: 0;
   z-index: 1200;
@@ -958,14 +958,14 @@ body > .container {
   padding: 16px;
 }
 
-#mts-confirm-modal .mts-modal-backdrop {
+#bm-confirm-modal .bm-modal-backdrop {
   position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.55);
   backdrop-filter: blur(3px);
 }
 
-#mts-confirm-modal .mts-modal-box {
+#bm-confirm-modal .bm-modal-box {
   position: relative;
   width: min(100%, 420px);
   background: #ffffff;
@@ -977,28 +977,28 @@ body > .container {
   box-sizing: border-box;
 }
 
-#mts-confirm-modal .mts-modal-title {
+#bm-confirm-modal .bm-modal-title {
   font-size: 18px;
   font-weight: 700;
   color: #0f172a;
   margin: 0 0 8px;
 }
 
-#mts-confirm-modal .mts-modal-msg {
+#bm-confirm-modal .bm-modal-msg {
   font-size: 14px;
   line-height: 1.6;
   color: #334155;
   margin: 0 0 20px;
 }
 
-#mts-confirm-modal .mts-modal-actions {
+#bm-confirm-modal .bm-modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-#mts-confirm-modal .mts-modal-cancel,
-#mts-confirm-modal .mts-modal-ok {
+#bm-confirm-modal .bm-modal-cancel,
+#bm-confirm-modal .bm-modal-ok {
   border-radius: 10px;
   padding: 9px 16px;
   font-size: 14px;
@@ -1007,21 +1007,21 @@ body > .container {
   border: 1px solid transparent;
 }
 
-#mts-confirm-modal .mts-modal-cancel {
+#bm-confirm-modal .bm-modal-cancel {
   background: #f1f5f9;
   color: #334155;
   border-color: #cbd5e1;
 }
 
-#mts-confirm-modal .mts-modal-cancel:hover {
+#bm-confirm-modal .bm-modal-cancel:hover {
   background: #e2e8f0;
 }
 
-#mts-confirm-modal .mts-modal-ok {
+#bm-confirm-modal .bm-modal-ok {
   background: #1e3a8a;
   color: #ffffff;
 }
 
-#mts-confirm-modal .mts-modal-ok:hover {
+#bm-confirm-modal .bm-modal-ok:hover {
   background: #172554;
 }

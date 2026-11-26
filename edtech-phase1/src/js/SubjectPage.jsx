@@ -59,11 +59,17 @@ export default function SubjectPage({ onNavigate, subjectKey, onRequireLogin }) 
     if (test.link) {
       // Truyền thông tin user qua URL params (vì localStorage bị cô lập theo domain)
       const url = new URL(test.link, window.location.origin);
+      const returnUrl = window.location.origin + window.location.pathname + '#' + subjectKey;
+      const uidParam = user.id || ('user_' + user.username);
+      url.searchParams.set('bmedu_user', user.username || '');
+      url.searchParams.set('bmedu_name', user.displayName || user.username || '');
+      url.searchParams.set('bmedu_id', uidParam);
+      url.searchParams.set('bmedu_return', returnUrl);
+      // Tương thích ngược với các repo đề thi cũ đã xuất bản
       url.searchParams.set('mtsedu_user', user.username || '');
       url.searchParams.set('mtsedu_name', user.displayName || user.username || '');
-      url.searchParams.set('mtsedu_id', user.id || ('user_' + user.username));
-      // Lưu URL trang chủ để quiz có thể quay lại
-      url.searchParams.set('mtsedu_return', window.location.origin + window.location.pathname + '#' + subjectKey);
+      url.searchParams.set('mtsedu_id', uidParam);
+      url.searchParams.set('mtsedu_return', returnUrl);
       openExam(url.toString(), test.title);
     } else {
       alert('Bài thi này đang được cập nhật. Vui lòng quay lại sau!');
@@ -75,7 +81,7 @@ export default function SubjectPage({ onNavigate, subjectKey, onRequireLogin }) 
   };
 
   return (
-    <div className="relative w-full min-h-screen mts-bg text-black font-sans">
+    <div className="relative w-full min-h-screen bm-bg text-black font-sans">
       {/* Navbar - FIXED: Increased padding for better visual balance */}
       <nav className="fixed top-0 left-0 right-0 z-50 w-full px-4 lg:px-5 xl:px-8 py-3 sm:py-4 flex flex-row justify-between items-center bg-white/80 backdrop-blur-md border-b border-black/8">
         <div 

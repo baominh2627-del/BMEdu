@@ -2,13 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getDatabase, ref, get, push, query, orderByChild, equalTo, update } from "firebase/database";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyC8AT2g3vS54-Qco3uU36xYsXN04trj0Yw",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "mtsedu-85ea3.firebaseapp.com",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://mtsedu-85ea3-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "mtsedu-85ea3",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "mtsedu-85ea3.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "73617729802",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:73617729802:web:e7fa3c3c3b9ded7522f2f3"
 };
 
 let app = null;
