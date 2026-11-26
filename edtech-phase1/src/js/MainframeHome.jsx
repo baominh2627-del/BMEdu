@@ -336,7 +336,7 @@ export default function MainframeHome({ onNavigateToLogin, onNavigate }) {
           50%       { transform: translateY(-16px) rotate(1.5deg); }
         }
         .net-ve-img {
-          filter: drop-shadow(0 16px 32px rgba(242, 66, 136, 0.22));
+          filter: drop-shadow(0 16px 32px rgba(37, 99, 235, 0.22));
           animation: floatUp 6s ease-in-out infinite;
         }
       `,
