@@ -172,7 +172,13 @@ function LoginPage({ onBack, onLoginSuccess }) {
             =========================================== */}
         <div className="login-card__brand">
           {/* Logo icon */}
-          <div className="login-card__logo-icon">🎓</div>
+          <div className="login-card__logo-icon">
+            <img
+              src={`${import.meta.env.BASE_URL}logo_BM.png`}
+              alt="BM Education"
+              style={{ width: "56px", height: "56px", objectFit: "contain", display: "block" }}
+            />
+          </div>
           {/* Tên hệ thống */}
           <h2 className="login-card__brand-title">BM Education</h2>
         </div>

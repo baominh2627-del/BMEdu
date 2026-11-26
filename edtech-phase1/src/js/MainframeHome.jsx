@@ -66,15 +66,17 @@ export default function MainframeHome({ onNavigateToLogin, onNavigate }) {
       {/* Navbar */}
       <nav className="fixed top-0 left-0 right-0 z-50 w-full flex flex-row justify-between items-center bg-white/80 backdrop-blur-md border-b border-black/8 px-4 lg:px-5 xl:px-8 py-3 sm:py-4">
         {/* Logo */}
-        <div className="flex flex-row gap-1.5 xl:gap-2 items-center shrink-0 whitespace-nowrap">
+        <div className="flex flex-row gap-2 items-center shrink-0 whitespace-nowrap">
+          <img
+            src={`${import.meta.env.BASE_URL}logo_BM.png`}
+            alt="BM Education"
+            className="h-7 sm:h-8 xl:h-9 w-auto object-contain shrink-0"
+          />
           <span
             className="text-[18px] sm:text-[20px] xl:text-[23px] 2xl:text-[25px] tracking-tight text-black font-bold whitespace-nowrap"
             style={{ fontFamily: "var(--font-heading)" }}
           >
             BM Education
-          </span>
-          <span className="text-[20px] sm:text-[22px] xl:text-[26px] 2xl:text-[28px] text-black/40 select-none">
-            &#10033;
           </span>
         </div>
 
@@ -309,12 +311,12 @@ export default function MainframeHome({ onNavigateToLogin, onNavigate }) {
           </div>
         </div>
 
-        {/* Right: Decorative SVG with color animation — shown on all screens */}
+        {/* Right: BM Logo with gentle float animation — shown on all screens */}
         <div className="flex w-full md:w-1/2 items-center justify-center relative z-10">
-          <div className="net-ve-wrapper" style={{ width: "min(280px, 70vw)", height: "min(280px, 70vw)" }}>
+          <div className="net-ve-wrapper" style={{ width: "min(320px, 72vw)", height: "min(320px, 72vw)" }}>
             <img
-              src="/net_ve.svg"
-              alt="Decorative illustration"
+              src={`${import.meta.env.BASE_URL}logo_BM.png`}
+              alt="BM Education Logo"
               className="net-ve-img w-full h-full object-contain"
             />
           </div>
@@ -329,19 +331,13 @@ export default function MainframeHome({ onNavigateToLogin, onNavigate }) {
           0%, 100% { opacity: 1; }
           50% { opacity: 0; }
         }
-        @keyframes colorShift {
-          0%   { filter: hue-rotate(0deg)   saturate(1.2) brightness(1); }
-          25%  { filter: hue-rotate(60deg)  saturate(1.4) brightness(1.05); }
-          50%  { filter: hue-rotate(180deg) saturate(1.3) brightness(1); }
-          75%  { filter: hue-rotate(270deg) saturate(1.5) brightness(1.05); }
-          100% { filter: hue-rotate(360deg) saturate(1.2) brightness(1); }
-        }
         @keyframes floatUp {
           0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50%       { transform: translateY(-18px) rotate(2deg); }
+          50%       { transform: translateY(-16px) rotate(1.5deg); }
         }
         .net-ve-img {
-          animation: colorShift 8s ease-in-out infinite, floatUp 6s ease-in-out infinite;
+          filter: drop-shadow(0 16px 32px rgba(242, 66, 136, 0.22));
+          animation: floatUp 6s ease-in-out infinite;
         }
       `,
         }}

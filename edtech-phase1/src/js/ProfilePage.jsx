@@ -47,8 +47,8 @@ function Logo({ className = '' }) {
     <>
       {ok && (
         <img
-          src={`${import.meta.env.BASE_URL}net_ve.svg`}
-          alt=""
+          src={`${import.meta.env.BASE_URL}logo_BM.png`}
+          alt="BM Education"
           className={className}
           onError={() => setOk(false)}
         />
@@ -65,7 +65,7 @@ function Logo({ className = '' }) {
 
 function Mascot({ className = '' }) {
   const [ok, setOk] = useState(true);
-  return ok ? <img src="/bm-mascot.png" alt="" className={className} onError={() => setOk(false)} /> : null;
+  return ok ? <img src={`${import.meta.env.BASE_URL}bm-mascot.png`} alt="BM Education" className={className} onError={() => setOk(false)} /> : null;
 }
 
 const Card = ({ title, action, children, className = '' }) => (

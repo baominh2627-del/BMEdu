@@ -85,14 +85,16 @@ export default function SubjectPage({ onNavigate, subjectKey, onRequireLogin }) 
       {/* Navbar - FIXED: Increased padding for better visual balance */}
       <nav className="fixed top-0 left-0 right-0 z-50 w-full px-4 lg:px-5 xl:px-8 py-3 sm:py-4 flex flex-row justify-between items-center bg-white/80 backdrop-blur-md border-b border-black/8">
         <div 
-          className="flex flex-row gap-1.5 xl:gap-2 items-center cursor-pointer hover:opacity-70 transition-opacity shrink-0 whitespace-nowrap"
+          className="flex flex-row gap-2 items-center cursor-pointer hover:opacity-70 transition-opacity shrink-0 whitespace-nowrap"
           onClick={() => onNavigate('home')}
         >
+          <img
+            src={`${import.meta.env.BASE_URL}logo_BM.png`}
+            alt="BM Education"
+            className="h-7 sm:h-8 xl:h-9 w-auto object-contain shrink-0"
+          />
           <span className="text-[18px] sm:text-[20px] xl:text-[23px] 2xl:text-[25px] tracking-tight text-black font-bold whitespace-nowrap" style={{ fontFamily: 'var(--font-heading)' }}>
             BM Education
-          </span>
-          <span className="text-[20px] sm:text-[22px] xl:text-[26px] 2xl:text-[28px] text-black/40 select-none">
-            &#10033;
           </span>
         </div>
 
